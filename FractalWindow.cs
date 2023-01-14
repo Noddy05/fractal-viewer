@@ -1,12 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fractal_Viewer
+namespace FractalViewer
 {
     class FractalWindow : IDisposable
     {
@@ -15,11 +12,21 @@ namespace Fractal_Viewer
         private int ibo;
         private int shader;
 
+        private int uniformOffset;
+        private int uniformSize;
+        private int uniformIterations;
+
+        public Vector2 offset { get; private set; }
+        public Vector2 size { get; private set; }
+
         public FractalWindow()
         {
+            size = new Vector2(3);
+            offset = new Vector2();
+
             float[] vertices = new float[]
             {
-                -1, -1, 
+                -1, -1,
                 -1,  1,
                  1,  1,
                  1, -1
@@ -59,7 +66,7 @@ namespace Fractal_Viewer
             GL.CompileShader(vertexShader);
 
             int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, File.ReadAllText(@"C:\Users\noah0\source\repos\Fractal Viewer\fractal_frag_shader.glsl"));
+            GL.ShaderSource(fragmentShader, File.ReadAllText(@"C:\Users\noah0\source\repos\Fractal Viewer\universal_fractal_frag_shader.glsl"));
             GL.CompileShader(fragmentShader);
 
             shader = GL.CreateProgram();
@@ -70,6 +77,10 @@ namespace Fractal_Viewer
 
             GL.DetachShader(shader, vertexShader);
             GL.DetachShader(shader, fragmentShader);
+
+            uniformOffset = GL.GetUniformLocation(shader, "offset");
+            uniformSize = GL.GetUniformLocation(shader, "scale");
+            uniformIterations = GL.GetUniformLocation(shader, "iterations");
         }
 
         public void Dispose()
@@ -86,14 +97,27 @@ namespace Fractal_Viewer
             GL.UseProgram(0);
             GL.DeleteProgram(shader);
         }
+        public void SetOffset(Vector2 position)
+        {
+            GL.Uniform2(uniformOffset, position);
+            offset = position;
+        }
+
+        public void SetSize(Vector2 size)
+        {
+            GL.Uniform2(uniformSize, size);
+            this.size = size;
+        }
 
         public void RenderFractal()
         {
             GL.UseProgram(shader);
             GL.BindVertexArray(vao);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
+            GL.Uniform2(uniformOffset, offset);
+            GL.Uniform2(uniformSize, size);
+            GL.Uniform1(uniformIterations, 500);
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
-
         }
     }
 }

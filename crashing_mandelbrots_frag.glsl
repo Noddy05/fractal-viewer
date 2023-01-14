@@ -1,4 +1,4 @@
-﻿#version 400 core
+﻿#version 330 core
 
 in vec2 vPosition;
 in vec2 vOffset;
@@ -13,6 +13,7 @@ float interpolate(float a, float b, float t){
 float cosInterpolate(float a, float b, float t){
 	return interpolate(a, b, (1 - cos(t * 3.141)) / 2);
 }
+float e = 2.71828;
 
 void main(){
 	//aColor = vec4((vPosition.x + 1) / 2, (vPosition.y + 1) / 2, 1.0, 1.0);
@@ -20,11 +21,15 @@ void main(){
 	float mappedPositionY = float(vPosition.y / 2 * vScale.y + vOffset.y);
 	float a = mappedPositionX;
 	float b = mappedPositionY;
+	float t = 0.5;
 
 	int n = 0;
 	while(n < vIterations){
-		float newA = float(a * a - b * b + mappedPositionX);
-		float newB = float(2 * a * b + mappedPositionY);
+		float newA = a * a * cos(t) - b * b * cos(t) + a * sin(a) * (pow(e, 2 * b) + 1) / 
+			(2 * pow(e, b)) + cos(a) * (pow(e, 2 * b) - 1) / (2 * pow(e, b)) * sin(t) + mappedPositionX;
+
+		float newB = 2 * a * b * cos(t) + cos(a) * (pow(e, 2 * b) - 1) / (2 * pow(e, b)) 
+			* sin(t) + b * sin(a) * (pow(e, 2 * b) + 1) / (2 * pow(e, b)) * sin(t) + mappedPositionY;
 
 		a = newA;
 		b = newB;

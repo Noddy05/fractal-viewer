@@ -1,14 +1,12 @@
 ﻿#version 400 core
 
+uniform vec2 c;
 in vec2 vPosition;
-in vec2 vOffset;
-in vec2 vScale;
 in float vIterations;
 uniform float NPower;
-
-out vec4 aColor;
 uniform float t;
 
+out vec4 aColor;
 const float e = 2.71828182846;
 const float pi = 3.14159265359;
 vec2 Add(vec2 z1, vec2 z2){
@@ -90,40 +88,31 @@ vec2 CircleInversion(float radius, vec2 center, vec2 z){
 	return fromCenterToZ * (radius * radius) 
 		/ (fromCenterToZ.x * fromCenterToZ.x + fromCenterToZ.y * fromCenterToZ.y);
 }
-
-float interpolate(float a, float b, float v){
-	return a + (b - a) * v;
+float interpolate(float a, float b, float t){
+	return a + (b - a) * t;
 }
 
 void main(){
-	float newT = 0.2 * 3.14;
-	//aColor = vec4((vPosition.x + 1) / 2, (vPosition.y + 1) / 2, 1.0, 1.0);
-	float mappedPositionX = float(vPosition.x / 2 * vScale.x + vOffset.x);
-	float mappedPositionY = float(vPosition.y / 2 * vScale.y + vOffset.y);
+	float mappedPositionX = float(vPosition.x) * 2;
+	float mappedPositionY = float(vPosition.y) * 2;
 	int n = 0;
+	
+	vec2 offset = vec2(0.75-t / 10000, 0);
+	vec2 c_const = CircleInversion(1, vec2(0), vec2(c.y, c.x));
 
-	vec2 offset = vec2(0);
-	vec2 c = vec2(mappedPositionX, mappedPositionY);
-	//c = CircleInversion(1, vec2(0, 0), c);
-
-	vec2 z = c;
-	while(n <= floor(vIterations)){
-        //z = Add(Mult(z, Add(z * cos(t), Sin(z) * sin(t))), c);
-		//z = Add(Pow(z, 2), Div(tan(t) + Mult(vec2(0, 1), c), Add(vec2(0, 1), c * tan(t))));
-		//z = Pow(z, 2) + Pow(vec2(0, 1) / tan(t) + c, -1) + Pow(Pow(c, -1) + tan(t) * Pow(vec2(0, 1), -1), -1);
-		//z = Pow(z, 2) + c; // (Offset = vec2(0.25, 0))
-		z = Pow(z + offset, 2) + c;
+	vec2 z = CircleInversion(1, vec2(0), vec2(mappedPositionY, mappedPositionX));
+	while(n < vIterations){
+		z = Pow(z + offset, 2) + c_const; // (Offset = vec2(0.25, 0))
 
 		if(pow(z.x, 2) + pow(z.y, 2) > 4)
 			break;
 
 		n++;
 	}
-
-	//float brightness = max(0, sqrt((n - log(log(sqrt(z.x * z.x + z.y * z.y)) / log(2)) / log(2)) / (vIterations - n)) * 2);
-	float brightness = pow(n / vIterations * 2, 0.66) * 2;
+	
+	float brightness = sqrt(n / float(vIterations / 16));
 	vec4 color = vec4(interpolate(0.224, 0.851, brightness), interpolate(0.075, 0.412, brightness), interpolate(0.318, 0.055, brightness), 1.0);
-	if(n - 1 == floor(vIterations))
+	if(n == floor(vIterations))
 		color = vec4(0.224, 0.075, 0.318, 1.0) / 1.3;
 
 	aColor = color;

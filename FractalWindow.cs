@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace FractalViewer
@@ -15,14 +16,20 @@ namespace FractalViewer
         private int uniformOffset;
         private int uniformSize;
         private int uniformIterations;
+        private int uniformT;
+        private int uniformXRatio;
+        private int uniformNPower;
+        public float NPower = 2;
 
         public Vector2 offset { get; private set; }
         public Vector2 size { get; private set; }
 
+        Stopwatch sw;
         public FractalWindow()
         {
-            size = new Vector2(3);
-            offset = new Vector2();
+            sw = Stopwatch.StartNew();
+            size = new Vector2(4);
+            offset = new Vector2(0, 0);
 
             float[] vertices = new float[]
             {
@@ -59,28 +66,15 @@ namespace FractalViewer
 
             GL.BindVertexArray(0);
 
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+            shader = Shader.GenerateShader(@"C:\Users\noah0\source\repos\Fractal Viewer\fractal_vert_shader.glsl",
+                @"C:\Users\noah0\source\repos\Fractal Viewer\fractal_frag_shader.glsl");
 
-
-            GL.ShaderSource(vertexShader, File.ReadAllText(@"C:\Users\noah0\source\repos\Fractal Viewer\fractal_vert_shader.glsl"));
-            GL.CompileShader(vertexShader);
-
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, File.ReadAllText(@"C:\Users\noah0\source\repos\Fractal Viewer\universal_fractal_frag_shader.glsl"));
-            GL.CompileShader(fragmentShader);
-
-            shader = GL.CreateProgram();
-            GL.AttachShader(shader, vertexShader);
-            GL.AttachShader(shader, fragmentShader);
-
-            GL.LinkProgram(shader);
-
-            GL.DetachShader(shader, vertexShader);
-            GL.DetachShader(shader, fragmentShader);
-
+            uniformXRatio = GL.GetUniformLocation(shader, "xRatio");
             uniformOffset = GL.GetUniformLocation(shader, "offset");
             uniformSize = GL.GetUniformLocation(shader, "scale");
             uniformIterations = GL.GetUniformLocation(shader, "iterations");
+            uniformNPower = GL.GetUniformLocation(shader, "NPower");
+            uniformT = GL.GetUniformLocation(shader, "t");
         }
 
         public void Dispose()
@@ -112,11 +106,19 @@ namespace FractalViewer
         public void RenderFractal()
         {
             GL.UseProgram(shader);
+            GL.Uniform1(uniformNPower, NPower);
             GL.BindVertexArray(vao);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
             GL.Uniform2(uniformOffset, offset);
-            GL.Uniform2(uniformSize, size);
-            GL.Uniform1(uniformIterations, 500);
+            Vector2 windowSize = Program.GetWindow().Size;
+            GL.Uniform2(uniformSize, size * windowSize / 720.0f);
+            float t = sw.ElapsedMilliseconds;
+            //GL.Uniform1(uniformIterations, MathF.Min(MathF.Pow(t, 3.5f), 1000));
+            GL.Uniform1(uniformIterations, 1000f);
+            GL.Uniform1(uniformT, t);
+
+            GL.Uniform1(uniformXRatio, 1);
+
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
         }
     }

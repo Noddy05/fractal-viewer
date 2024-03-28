@@ -38,13 +38,13 @@ namespace FractalViewer
             mandelbrotViewer = new MandelbrotFractalViewer();
             mandelbrotFramebufferTexture = mandelbrotViewer.GetTexture();
 
-            mandelbrotViewerShader = Shader.GenerateShader(@"C:\Users\noah0\source\repos\Fractal Viewer\mandelbrotViewerVert.glsl",
-                @"C:\Users\noah0\source\repos\Fractal Viewer\mandelbrotViewerFrag.glsl");
+            mandelbrotViewerShader = Shader.GenerateShader(@"../../../mandelbrotViewerVert.glsl",
+                @"../../../mandelbrotViewerFrag.glsl");
 
             juliaViewer = new JuliaFractalViewer();
             juliaFramebufferTexture = juliaViewer.GetTexture();
-            juliaShader = Shader.GenerateShader(@"C:\Users\noah0\source\repos\Fractal Viewer\julia_vert.glsl",
-                @"C:\Users\noah0\source\repos\Fractal Viewer\julia_frag.glsl");
+            juliaShader = Shader.GenerateShader(@"../../../julia_vert.glsl",
+                @"../../../julia_frag.glsl");
             float heightToWidthRatio = Size.Y / (float)Size.X;
             float width = 1f * heightToWidthRatio;
             juliaViewerGUI = new GUIElement(mandelbrotViewerShader, 1 - width, 0, width, 1f, juliaFramebufferTexture);
@@ -122,8 +122,8 @@ namespace FractalViewer
             base.OnResize(e);
             juliaViewer = new JuliaFractalViewer();
             juliaFramebufferTexture = juliaViewer.GetTexture();
-            juliaShader = Shader.GenerateShader(@"C:\Users\noah0\source\repos\Fractal Viewer\julia_vert.glsl",
-                @"C:\Users\noah0\source\repos\Fractal Viewer\julia_frag.glsl");
+            juliaShader = Shader.GenerateShader(@"../../../julia_vert.glsl",
+                @"../../../julia_frag.glsl");
             float heightToWidthRatio = Size.Y / (float)Size.X;
             float width = 1f * heightToWidthRatio;
             juliaViewerGUI = new GUIElement(mandelbrotViewerShader, 1 - width, 0, width, 1f, juliaFramebufferTexture);

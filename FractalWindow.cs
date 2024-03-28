@@ -66,8 +66,8 @@ namespace FractalViewer
 
             GL.BindVertexArray(0);
 
-            shader = Shader.GenerateShader(@"C:\Users\noah0\source\repos\Fractal Viewer\fractal_vert_shader.glsl",
-                @"C:\Users\noah0\source\repos\Fractal Viewer\fractal_frag_shader.glsl");
+            shader = Shader.GenerateShader(@"../../../fractal_vert_shader.glsl",
+                @"../../../fractal_frag_shader.glsl");
 
             uniformXRatio = GL.GetUniformLocation(shader, "xRatio");
             uniformOffset = GL.GetUniformLocation(shader, "offset");

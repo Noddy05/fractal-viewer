@@ -98,9 +98,12 @@ void main(){
 	int n = 0;
 	
 	vec2 offset = vec2(0.75-t / 10000, 0);
+	offset = vec2(0);
 	vec2 c_const = CircleInversion(1, vec2(0), vec2(c.y, c.x));
+	c_const = c;
 
 	vec2 z = CircleInversion(1, vec2(0), vec2(mappedPositionY, mappedPositionX));
+	z = vec2(mappedPositionX, mappedPositionY);
 	while(n < vIterations){
 		z = Pow(z + offset, 2) + c_const; // (Offset = vec2(0.25, 0))
 

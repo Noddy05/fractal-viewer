@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Fractal Viewer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bcbf7da5016cc7d55849ed6d1696f7ee7d06b9f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Fractal Viewer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Fractal Viewer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
